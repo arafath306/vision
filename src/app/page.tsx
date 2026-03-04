@@ -236,16 +236,8 @@ export default function HomePage() {
         <div className="relative max-w-[1400px] mx-auto px-4 sm:px-8 w-full animate-fade-in-up">
           {/* Hero Banner with Content Overlay */}
           <div className="relative group/hero rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-[#0d1530]">
-            {/* Background Image with Gradient Overlays */}
-            <div className="absolute inset-0">
-              <img
-                src="https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1600&q=80"
-                alt="SkyX Platform Banner"
-                className="w-full h-full object-cover opacity-50"
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f1e]/80 via-[#0a0f1e]/40 to-[#0a0f1e]/90" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0a0f1e]/60 via-transparent to-[#0a0f1e]/60" />
-            </div>
+            {/* Content background is handled by the parent container's bg-[#0d1530] */}
+
 
             {/* Content Overlay */}
             <div className="relative z-10 py-16 px-6 sm:py-24 sm:px-12 flex flex-col items-center text-center">
@@ -290,16 +282,9 @@ export default function HomePage() {
 
       {/* ABOUT */}
       <section id="about" className="relative py-24 px-4 sm:px-6 overflow-hidden reveal">
-        {/* Background Overlay Image */}
-        <div className="absolute inset-0 z-0">
-          <img
-            src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=80"
-            alt="About Background"
-            className="w-full h-full object-cover opacity-50"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f1e]/70 via-[#0a0f1e]/10 to-[#0a0f1e]/70" />
-          <div className="absolute inset-0 bg-[#0a0f1e]/10" />
-        </div>
+        {/* Background Overlay (Image Removed) */}
+        <div className="absolute inset-0 z-0 bg-[#0a0f1e]" />
+
 
         <div className="relative z-10 max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">

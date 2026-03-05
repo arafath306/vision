@@ -103,15 +103,28 @@ export default function HomePage() {
             </div>
 
             <div className="hidden md:flex items-center gap-6">
-              {['About', 'Services', 'How It Works', 'Blog', 'Contact'].map(item => (
-                <a key={item} href={item === 'Blog' ? '/blog' : `#${item.toLowerCase().replace(/\s/g, '-')}`}
-                  className="text-sm font-medium transition-colors duration-200"
-                  style={{ color: '#94a3b8' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = '#0ea5e9')}
-                  onMouseLeave={e => (e.currentTarget.style.color = '#94a3b8')}>
-                  {item}
-                </a>
-              ))}
+              {['About', 'Services', 'How It Works', 'Blog', 'Contact'].map(item => {
+                const isBlog = item === 'Blog';
+                const href = isBlog ? '/blog' : `#${item.toLowerCase().replace(/\s/g, '-')}`;
+
+                return isBlog ? (
+                  <Link key={item} href={href}
+                    className="text-sm font-medium transition-colors duration-200"
+                    style={{ color: '#94a3b8' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#0ea5e9')}
+                    onMouseLeave={e => (e.currentTarget.style.color = '#94a3b8')}>
+                    {item}
+                  </Link>
+                ) : (
+                  <a key={item} href={href}
+                    className="text-sm font-medium transition-colors duration-200"
+                    style={{ color: '#94a3b8' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#0ea5e9')}
+                    onMouseLeave={e => (e.currentTarget.style.color = '#94a3b8')}>
+                    {item}
+                  </a>
+                )
+              })}
             </div>
 
             <div className="flex items-center gap-3">
@@ -134,15 +147,28 @@ export default function HomePage() {
           mobileMenuOpen ? "max-h-[400px] border-b opacity-100" : "max-h-0 opacity-0"
         )} style={{ background: '#0d1530', borderColor: '#1e3a5f' }}>
           <div className="px-5 py-6 space-y-4">
-            {['About', 'Services', 'How It Works', 'Blog', 'Contact'].map(item => (
-              <a key={item} href={item === 'Blog' ? '/blog' : `#${item.toLowerCase().replace(/\s/g, '-')}`}
-                className="flex items-center justify-between text-base font-bold py-2"
-                style={{ color: '#e2e8f0' }}
-                onClick={() => setMobileMenuOpen(false)}>
-                {item}
-                <ChevronRight size={18} className="text-sky-500" />
-              </a>
-            ))}
+            {['About', 'Services', 'How It Works', 'Blog', 'Contact'].map(item => {
+              const isBlog = item === 'Blog';
+              const href = isBlog ? '/blog' : `#${item.toLowerCase().replace(/\s/g, '-')}`;
+
+              return isBlog ? (
+                <Link key={item} href={href}
+                  className="flex items-center justify-between text-base font-bold py-2"
+                  style={{ color: '#e2e8f0' }}
+                  onClick={() => setMobileMenuOpen(false)}>
+                  {item}
+                  <ChevronRight size={18} className="text-sky-500" />
+                </Link>
+              ) : (
+                <a key={item} href={href}
+                  className="flex items-center justify-between text-base font-bold py-2"
+                  style={{ color: '#e2e8f0' }}
+                  onClick={() => setMobileMenuOpen(false)}>
+                  {item}
+                  <ChevronRight size={18} className="text-sky-500" />
+                </a>
+              )
+            })}
             <div className="pt-4 flex flex-col gap-3">
               <Link href="/auth/login" className="btn-outline w-full" onClick={() => setMobileMenuOpen(false)}>Login</Link>
               <Link href="/auth/register" className="btn-primary w-full" onClick={() => setMobileMenuOpen(false)}>Register</Link>

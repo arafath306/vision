@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json?v=2" />
         <meta name="theme-color" content="#0ea5e9" />
@@ -32,13 +32,16 @@ export default function RootLayout({
               (function() {
                 // Prevent infinite reload loops
                 var reloadKey = 'pwa_reload_count';
-                var lastReload = sessionStorage.getItem(reloadKey);
-                var now = Date.now();
-                
-                // If we reloaded less than 5 seconds ago, don't auto-reload again
-                if (lastReload && (now - parseInt(lastReload)) < 5000) {
-                  return;
-                }
+                // Wrap storage in try-catch since mobile webviews or incognito modes throw SecurityErrors
+                try {
+                  var lastReload = sessionStorage.getItem(reloadKey);
+                  var now = Date.now();
+                  
+                  // If we reloaded less than 5 seconds ago, don't auto-reload again
+                  if (lastReload && (now - parseInt(lastReload)) < 5000) {
+                    return;
+                  }
+                } catch(e) { /* ignore storage errors */ }
 
                 function handleLoadError(error) {
                   try {
@@ -49,7 +52,9 @@ export default function RootLayout({
                     
                     if (isChunkError) {
                       console.warn('Recovering from load error. Message:', message);
-                      sessionStorage.setItem(reloadKey, Date.now().toString());
+                      try {
+                        sessionStorage.setItem(reloadKey, Date.now().toString());
+                      } catch(e) {}
                       
                       // Add a cache-buster query param and reload
                       var url = new URL(window.location.href);
@@ -70,7 +75,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body>{children}</body>
+      <body suppressHydrationWarning>{children}</body>
     </html>
   )
 }

@@ -6,7 +6,7 @@ import { formatDate, getStatusColor, getRoleColor, getRoleLabel, cn } from '@/li
 import type { UserProfile } from '@/lib/types'
 import {
     Users, Search, Filter, UserCheck, UserX, Ban,
-    ChevronDown, CheckCircle, AlertCircle, X, Edit2
+    ChevronDown, CheckCircle, AlertCircle, X, Edit2, Trash2
 } from 'lucide-react'
 
 const ROLES = ['MEMBER', 'TEAM_TRAINER', 'TEAM_LEADER', 'ADMIN'] as const
@@ -278,6 +278,34 @@ export default function AdminUsersPage() {
                                 <button className="btn-outline" style={{ padding: '0.625rem 1rem' }}
                                     onClick={() => setEditUser(null)}>
                                     Cancel
+                                </button>
+                            </div>
+
+                            <div className="pt-4 border-t" style={{ borderColor: 'rgba(239, 68, 68, 0.1)' }}>
+                                <button
+                                    className="w-full py-2.5 rounded-xl border border-red-500/20 text-red-500 hover:bg-red-500/10 transition-all text-sm font-bold flex items-center justify-center gap-2"
+                                    onClick={async () => {
+                                        if (confirm(`Are you absolutely sure you want to delete ${editUser.full_name}? This action cannot be undone.`)) {
+                                            setSaving(true);
+                                            // Call the RPC function to delete account from both tables
+                                            const { error } = await supabase.rpc('delete_user_by_admin', {
+                                                target_user_id: editUser.id
+                                            });
+
+                                            if (error) {
+                                                console.error('Delete error:', error);
+                                                setMessage({ type: 'error', text: 'Failed to delete user. Make sure the SQL script is run.' });
+                                            } else {
+                                                setMessage({ type: 'success', text: 'User deleted successfully from system.' });
+                                                load();
+                                                setTimeout(() => setEditUser(null), 1200);
+                                            }
+                                            setSaving(false);
+                                        }
+                                    }}
+                                    disabled={saving}
+                                >
+                                    <Trash2 size={16} /> Delete User Permanent
                                 </button>
                             </div>
                         </div>

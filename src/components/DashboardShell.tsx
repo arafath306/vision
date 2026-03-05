@@ -19,6 +19,7 @@ interface SidebarProps {
 
 const memberNav = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/dashboard/profile', label: 'My Profile', icon: UserCircle },
     { href: '/dashboard/referrals', label: 'My Referrals', icon: Users },
     { href: '/dashboard/withdraw', label: 'Withdraw', icon: DollarSign },
     {
@@ -39,6 +40,7 @@ const memberNav = [
 
 const trainerNav = [
     { href: '/trainer', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/trainer/profile', label: 'My Profile', icon: UserCircle },
     { href: '/trainer/members', label: 'My Members', icon: Users },
     { href: '/trainer/commissions', label: 'Commissions', icon: DollarSign },
     { href: '/trainer/withdraw', label: 'Withdraw', icon: DollarSign },
@@ -47,6 +49,7 @@ const trainerNav = [
 
 const leaderNav = [
     { href: '/leader', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/leader/profile', label: 'My Profile', icon: UserCircle },
     { href: '/leader/trainers', label: 'My Trainers', icon: Users },
     { href: '/leader/members', label: 'All Members', icon: Users },
     { href: '/leader/commissions', label: 'Commissions', icon: DollarSign },
@@ -56,6 +59,7 @@ const leaderNav = [
 
 const adminNav = [
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/admin/profile', label: 'My Profile', icon: UserCircle },
     { href: '/admin/users', label: 'Manage Users', icon: Users },
     { href: '/admin/activations', label: 'Activations', icon: UserCircle },
     { href: '/admin/withdrawals', label: 'Withdrawals', icon: DollarSign },

@@ -110,117 +110,151 @@ export default function NotificationBell() {
                     setOpen(!open)
                     if (!open) loadNotifications()
                 }}
-                className="relative p-1.5 rounded-lg hover:bg-white/5 transition-colors"
+                className="relative p-2 rounded-xl hover:bg-white/5 active:scale-90 transition-all"
             >
-                <Bell size={20} className={cn(
-                    "transition-colors",
-                    open ? "text-sky-400" : "text-slate-400 hover:text-slate-200"
-                )} />
-                {unreadCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center px-1 border-2 border-[#0d1530] animate-pulse">
-                        {unreadCount > 9 ? '9+' : unreadCount}
-                    </span>
-                )}
+                <div className="relative">
+                    <Bell size={22} className={cn(
+                        "transition-all duration-300",
+                        open ? "text-sky-400 rotate-12" : "text-slate-400 hover:text-slate-200"
+                    )} />
+                    {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-red-600 text-white text-[10px] font-black rounded-full flex items-center justify-center px-1 border-2 border-[#0d1530] shadow-glow-red animate-pulse">
+                            {unreadCount > 9 ? '9+' : unreadCount}
+                        </span>
+                    )}
+                </div>
             </button>
 
-            {/* Dropdown */}
+            {/* Mobile/Android Specific Overlay */}
             {open && (
-                <div className="absolute right-0 top-full mt-2 w-[340px] sm:w-[380px] max-h-[70vh] rounded-2xl border border-white/10 bg-slate-900/95 backdrop-blur-xl shadow-2xl z-50 overflow-hidden animate-fade-in-up"
-                    style={{ boxShadow: '0 25px 50px -12px rgba(0,0,0,0.6)' }}>
-                    {/* Header */}
-                    <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
-                        <div className="flex items-center gap-2">
-                            <Bell size={16} className="text-sky-400" />
-                            <h3 className="text-sm font-bold text-white">Notifications</h3>
-                            {unreadCount > 0 && (
-                                <span className="text-[10px] font-bold text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded-full">
-                                    {unreadCount} new
-                                </span>
-                            )}
-                        </div>
-                        <div className="flex items-center gap-2">
-                            {unreadCount > 0 && (
-                                <button
-                                    onClick={markAllAsRead}
-                                    className="text-[10px] font-bold text-slate-500 hover:text-emerald-400 transition-colors flex items-center gap-1"
-                                >
-                                    <Check size={12} /> Mark all read
-                                </button>
-                            )}
-                            <button onClick={() => setOpen(false)} className="p-1 text-slate-500 hover:text-white transition-colors">
-                                <X size={14} />
-                            </button>
-                        </div>
-                    </div>
+                <>
+                    {/* Dark Backdrop for Mobile & Desktop */}
+                    <div
+                        className="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-[100] sm:hidden animate-fade-in"
+                        onClick={() => setOpen(false)}
+                    />
 
-                    {/* Notification List */}
-                    <div className="overflow-y-auto max-h-[50vh] scrollbar-hide">
-                        {loading ? (
-                            <div className="flex items-center justify-center py-12">
-                                <div className="w-6 h-6 border-2 border-sky-500/30 border-t-sky-500 rounded-full animate-spin" />
+                    {/* Dropdown Container */}
+                    <div className={cn(
+                        "fixed left-1/2 -translate-x-1/2 top-20 w-[95%] max-w-[420px] sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-3 sm:translate-x-0 sm:w-[380px]",
+                        "max-h-[80vh] sm:max-h-[600px] rounded-[2rem] border border-white/10 bg-[#0d1530]/95 backdrop-blur-2xl shadow-3xl z-[101] overflow-hidden flex flex-col animate-fade-in-up",
+                        "shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)]"
+                    )}>
+                        {/* Header */}
+                        <div className="flex items-center justify-between px-6 py-5 border-b border-white/5 bg-white/2">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-xl bg-sky-500/10 flex items-center justify-center">
+                                    <Bell size={18} className="text-sky-400" />
+                                </div>
+                                <div>
+                                    <h3 className="text-sm font-bold text-white leading-none">Notifications</h3>
+                                    {unreadCount > 0 ? (
+                                        <p className="text-[10px] font-bold text-sky-400 mt-1 uppercase tracking-widest">{unreadCount} new alerts</p>
+                                    ) : (
+                                        <p className="text-[10px] font-bold text-slate-500 mt-1 uppercase tracking-widest">Inbox Zero</p>
+                                    )}
+                                </div>
                             </div>
-                        ) : notifications.length === 0 ? (
-                            <div className="py-12 text-center">
-                                <Bell size={32} className="mx-auto text-slate-700 mb-3" />
-                                <p className="text-sm text-slate-500 font-medium">No notifications yet</p>
-                                <p className="text-xs text-slate-600 mt-1">You're all caught up!</p>
+                            <div className="flex items-center gap-1">
+                                {unreadCount > 0 && (
+                                    <button
+                                        onClick={markAllAsRead}
+                                        className="p-2 text-slate-500 hover:text-emerald-400 active:scale-95 transition-all outline-none"
+                                        title="Mark all as read"
+                                    >
+                                        <Check size={18} />
+                                    </button>
+                                )}
+                                <button
+                                    onClick={() => setOpen(false)}
+                                    className="p-2 text-slate-500 hover:text-white active:scale-95 transition-all outline-none"
+                                >
+                                    <X size={20} />
+                                </button>
                             </div>
-                        ) : (
-                            <div>
-                                {notifications.map(n => {
-                                    const isRead = readIds.has(n.id)
-                                    return (
-                                        <button
-                                            key={n.id}
-                                            onClick={() => markAsRead(n.id)}
-                                            className={cn(
-                                                "w-full text-left px-5 py-4 border-b border-white/5 transition-all hover:bg-white/[0.02]",
-                                                !isRead && "bg-sky-500/[0.03]"
-                                            )}
-                                        >
-                                            <div className="flex gap-3">
-                                                <div className="mt-0.5">
-                                                    {getIcon(n.type)}
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-2 mb-0.5">
-                                                        <h4 className={cn(
-                                                            "text-xs font-bold truncate",
-                                                            isRead ? "text-slate-400" : "text-white"
-                                                        )}>
-                                                            {n.title}
-                                                        </h4>
-                                                        {!isRead && (
-                                                            <div className="w-2 h-2 bg-sky-500 rounded-full flex-shrink-0" />
-                                                        )}
-                                                    </div>
-                                                    <p className={cn(
-                                                        "text-[11px] leading-relaxed line-clamp-2",
-                                                        isRead ? "text-slate-600" : "text-slate-400"
+                        </div>
+
+                        {/* Notification List Area */}
+                        <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                            {loading ? (
+                                <div className="flex flex-col items-center justify-center py-20 gap-3">
+                                    <div className="w-8 h-8 border-2 border-sky-500/30 border-t-sky-500 rounded-full animate-spin" />
+                                    <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Synchronizing...</p>
+                                </div>
+                            ) : notifications.length === 0 ? (
+                                <div className="py-20 text-center px-10">
+                                    <div className="w-16 h-16 rounded-[2rem] bg-slate-800/50 flex items-center justify-center mx-auto mb-4 border border-white/5">
+                                        <Bell size={28} className="text-slate-600" />
+                                    </div>
+                                    <p className="text-sm text-slate-300 font-bold mb-1">Clear Horizon</p>
+                                    <p className="text-xs text-slate-500 leading-relaxed">You don't have any notifications at the moment.</p>
+                                </div>
+                            ) : (
+                                <div className="divide-y divide-white/5">
+                                    {notifications.map(n => {
+                                        const isRead = readIds.has(n.id)
+                                        return (
+                                            <button
+                                                key={n.id}
+                                                onClick={() => markAsRead(n.id)}
+                                                className={cn(
+                                                    "w-full text-left p-5 transition-all hover:bg-white/[0.03] active:bg-white/[0.05] group relative outline-none",
+                                                    !isRead ? "bg-sky-500/[0.02]" : "bg-transparent opacity-80"
+                                                )}
+                                            >
+                                                <div className="flex items-start gap-4">
+                                                    <div className={cn(
+                                                        "mt-1 w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110 duration-300 shadow-lg",
+                                                        !isRead ? "bg-sky-500/10 group-hover:bg-sky-500/20" : "bg-slate-800/50"
                                                     )}>
-                                                        {n.message}
-                                                    </p>
-                                                    <p className="text-[10px] text-slate-600 mt-1.5 font-medium">
-                                                        {getTimeDiff(n.created_at)}
-                                                    </p>
+                                                        {getIcon(n.type)}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0 pr-2">
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                            <h4 className={cn(
+                                                                "text-sm font-bold transition-colors truncate",
+                                                                !isRead ? "text-white" : "text-slate-400"
+                                                            )}>
+                                                                {n.title}
+                                                            </h4>
+                                                            {!isRead && (
+                                                                <div className="w-2 h-2 bg-sky-500 rounded-full flex-shrink-0 shadow-[0_0_8px_rgba(14,165,233,0.8)]" />
+                                                            )}
+                                                        </div>
+                                                        <p className={cn(
+                                                            "text-[12px] leading-relaxed line-clamp-3 mb-2",
+                                                            !isRead ? "text-slate-300" : "text-slate-500 font-medium"
+                                                        )}>
+                                                            {n.message}
+                                                        </p>
+                                                        <div className="flex items-center justify-between">
+                                                            <span className="text-[10px] text-sky-500/60 font-black uppercase tracking-widest font-mono">
+                                                                {n.type}
+                                                            </span>
+                                                            <p className="text-[10px] text-slate-500 font-bold flex items-center gap-1">
+                                                                <span className="w-1 h-1 rounded-full bg-slate-700" />
+                                                                {getTimeDiff(n.created_at)}
+                                                            </p>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </button>
-                                    )
-                                })}
+                                            </button>
+                                        )
+                                    })}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Footer / Scroll Hint */}
+                        {notifications.length > 0 && (
+                            <div className="px-6 py-4 border-t border-white/5 bg-white/2 text-center group active:scale-95 transition-all cursor-pointer">
+                                <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.2em] group-hover:text-sky-400 transition-colors">
+                                    End of stream
+                                </p>
                             </div>
                         )}
                     </div>
-
-                    {/* Footer */}
-                    {notifications.length > 0 && (
-                        <div className="px-5 py-3 border-t border-white/5 text-center">
-                            <p className="text-[10px] text-slate-600 font-bold uppercase tracking-wider">
-                                Showing latest {notifications.length} notifications
-                            </p>
-                        </div>
-                    )}
-                </div>
+                </>
             )}
         </div>
     )

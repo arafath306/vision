@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import { formatCurrency, formatDateTime } from '@/lib/utils'
 import { ClipboardList, CheckCircle, XCircle, Truck, Package, Clock } from 'lucide-react'
 import type { OrderStatus } from '@/lib/types'
@@ -37,6 +38,7 @@ export default async function AdminOrdersPage() {
         'use server'
         const sp = await createClient()
         await sp.from('ecommerce_orders').update({ status }).eq('id', orderId)
+        revalidatePath('/admin/ecommerce/orders')
     }
 
     return (

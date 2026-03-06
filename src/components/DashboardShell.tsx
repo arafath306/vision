@@ -96,7 +96,7 @@ interface NavItemData {
     children?: NavItemData[]
 }
 
-function NavItem({ item, pathname }: { item: NavItemData; pathname: string }) {
+function NavItem({ item, pathname, onClose }: { item: NavItemData; pathname: string; onClose?: () => void }) {
     const [open, setOpen] = useState(pathname.includes('/tasks'))
 
     if (item.children) {
@@ -115,7 +115,7 @@ function NavItem({ item, pathname }: { item: NavItemData; pathname: string }) {
                 {open && (
                     <div className="ml-4 mt-1 space-y-0.5 border-l pl-3" style={{ borderColor: '#1e3a5f' }}>
                         {item.children.map(child => (
-                            <Link key={child.href} href={child.href!}
+                            <Link key={child.href} href={child.href!} onClick={onClose}
                                 className={cn('sidebar-link text-xs', pathname === child.href && 'active')}>
                                 <child.icon size={14} />
                                 {child.label}
@@ -128,7 +128,7 @@ function NavItem({ item, pathname }: { item: NavItemData; pathname: string }) {
     }
 
     return (
-        <Link href={item.href!}
+        <Link href={item.href!} onClick={onClose}
             className={cn('sidebar-link', pathname === item.href && 'active')}>
             <item.icon size={16} />
             {item.label}
@@ -182,7 +182,7 @@ export default function DashboardShell({ profile, children }: { profile: UserPro
             {/* Nav */}
             <nav className="flex-1 overflow-y-auto px-3 py-6 space-y-1.5 scrollbar-hide">
                 {navItems.map(item => (
-                    <NavItem key={item.label} item={item} pathname={pathname} />
+                    <NavItem key={item.label} item={item} pathname={pathname} onClose={onClose} />
                 ))}
             </nav>
 
@@ -228,7 +228,7 @@ export default function DashboardShell({ profile, children }: { profile: UserPro
         }
         return [
             { href: '/dashboard', label: 'Home', icon: LayoutDashboard },
-            { href: '/dashboard/tasks/social-media', label: 'Tasks', icon: Briefcase },
+            { href: '/dashboard/tasks', label: 'Tasks', icon: Briefcase },
             { href: '/dashboard/referrals', label: 'Team', icon: Users },
             { href: '/dashboard/withdraw', label: 'Wallet', icon: DollarSign },
             { onClick: () => setMobileOpen(true), label: 'Menu', icon: Menu },

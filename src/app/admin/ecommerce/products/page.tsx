@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
 import { formatCurrency, formatDateTime } from '@/lib/utils'
 import { Plus, Package, Edit, Trash2 } from 'lucide-react'
@@ -19,6 +20,13 @@ export default async function AdminProductsPage() {
         .from('ecommerce_products')
         .select('*')
         .order('created_at', { ascending: false })
+
+    async function deleteProduct(id: string) {
+        'use server'
+        const sp = await createClient()
+        await sp.from('ecommerce_products').delete().eq('id', id)
+        revalidatePath('/admin/ecommerce/products')
+    }
 
     return (
         <div className="space-y-6 animate-fade-in-up pb-10">
@@ -89,16 +97,8 @@ export default async function AdminProductsPage() {
                                                 <Link href={`/admin/ecommerce/products/${p.id}/edit`} className="p-2 bg-slate-800 hover:bg-slate-700 text-sky-400 rounded-lg transition-colors" title="Edit Product">
                                                     <Edit size={16} />
                                                 </Link>
-                                                <form action={async () => {
-                                                    'use server'
-                                                    const sp = await createClient()
-                                                    await sp.from('ecommerce_products').delete().eq('id', p.id)
-                                                }}>
-                                                    <button type="submit" className="p-2 bg-slate-800 hover:bg-red-500/20 text-red-500 rounded-lg transition-colors" title="Delete Product" formAction={async () => {
-                                                        'use server'
-                                                        const sp = await createClient()
-                                                        await sp.from('ecommerce_products').delete().eq('id', p.id)
-                                                    }}>
+                                                <form action={deleteProduct.bind(null, p.id)}>
+                                                    <button type="submit" className="p-2 bg-slate-800 hover:bg-red-500/20 text-red-500 rounded-lg transition-colors" title="Delete Product">
                                                         <Trash2 size={16} />
                                                     </button>
                                                 </form>

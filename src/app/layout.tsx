@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://skyxvision.com'),
   title: 'SkyX Vision IT — Task-Based Business & E-Learning Platform',
   description: 'SkyX Vision is a professional task-based business platform offering data entry, design, and packaging jobs with a transparent commission system and team management',
   keywords: 'SkyX Vision It, referral business, task platform, data entry, commission, Bangladesh',

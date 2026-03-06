@@ -96,7 +96,7 @@ export default function ShopCatalog({ basePath }: { basePath: string }) {
                                     </div>
                                     <div className="flex justify-between items-center text-xs">
                                         <span className="text-slate-500">Suggested:</span>
-                                        <span className="text-slate-300 line-through">{formatCurrency(p.suggested_price)}</span>
+                                        <span className="text-slate-300">{formatCurrency(p.suggested_price)}</span>
                                     </div>
                                 </div>
                             </div>

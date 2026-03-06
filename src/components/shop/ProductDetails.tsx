@@ -122,7 +122,7 @@ export default function ProductDetails({ productId, basePath }: { productId: str
                             </div>
                             <div>
                                 <p className="text-sm text-slate-400 font-medium mb-1 flex items-center gap-1"><DollarSign size={14} /> Suggested Retail</p>
-                                <p className="text-3xl font-bold text-slate-300 line-through opacity-70">{formatCurrency(product.suggested_price)}</p>
+                                <p className="text-3xl font-bold text-slate-300 opacity-70">{formatCurrency(product.suggested_price)}</p>
                             </div>
                         </div>
                         <div className="mt-4 pt-4 border-t border-emerald-500/20 flex items-center justify-between">

@@ -6,8 +6,9 @@ import { formatDate, getStatusColor, getRoleColor, getRoleLabel, cn } from '@/li
 import type { UserProfile } from '@/lib/types'
 import {
     Users, Search, Filter, UserCheck, UserX, Ban,
-    ChevronDown, CheckCircle, AlertCircle, X, Edit2, Trash2
+    ChevronDown, CheckCircle, AlertCircle, X, Edit2, Trash2, Activity
 } from 'lucide-react'
+import UserRecordModal from './UserRecordModal'
 
 const ROLES = ['MEMBER', 'TEAM_TRAINER', 'TEAM_LEADER', 'ADMIN'] as const
 const STATUSES = ['INACTIVE', 'ACTIVE', 'SUSPENDED', 'BANNED'] as const
@@ -20,6 +21,7 @@ export default function AdminUsersPage() {
     const [filterStatus, setFilterStatus] = useState('')
     const [filterRole, setFilterRole] = useState('')
     const [editUser, setEditUser] = useState<UserProfile | null>(null)
+    const [recordUser, setRecordUser] = useState<UserProfile | null>(null)
     const [editForm, setEditForm] = useState({ role: '', status: '', trainer_id: '', leader_id: '' })
     const [trainers, setTrainers] = useState<UserProfile[]>([])
     const [leaders, setLeaders] = useState<UserProfile[]>([])
@@ -197,10 +199,16 @@ export default function AdminUsersPage() {
                                         </td>
                                         <td style={{ color: '#64748b', fontSize: '0.75rem' }}>{formatDate(u.created_at)}</td>
                                         <td>
-                                            <button className="btn-outline" style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
-                                                onClick={() => openEdit(u)}>
-                                                <Edit2 size={12} /> Edit
-                                            </button>
+                                            <div className="flex flex-wrap gap-2">
+                                                <button className="btn-outline flex-1 sm:flex-none justify-center" style={{ padding: '0.35rem 0.6rem', fontSize: '0.75rem' }}
+                                                    onClick={() => openEdit(u)}>
+                                                    <Edit2 size={12} /> Edit
+                                                </button>
+                                                <button className="btn-outline flex-1 sm:flex-none justify-center" style={{ padding: '0.35rem 0.6rem', fontSize: '0.75rem', borderColor: 'green' }}
+                                                    onClick={() => setRecordUser(u)}>
+                                                    <Activity size={12} className="text-emerald-400" /> Record
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -321,6 +329,11 @@ export default function AdminUsersPage() {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Record Modal */}
+            {recordUser && (
+                <UserRecordModal user={recordUser} onClose={() => setRecordUser(null)} />
             )}
         </div>
     )

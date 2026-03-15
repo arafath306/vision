@@ -95,26 +95,26 @@ function PdfModal({ url, onClose }: { url: string; onClose: () => void }) {
             style={{ background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(12px)' }}
         >
             {/* Top bar */}
-            <div className="flex items-center justify-between px-5 py-3 flex-shrink-0"
+            <div className="flex flex-wrap items-center justify-between px-4 py-3 gap-3 flex-shrink-0"
                 style={{ background: 'rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
                 <div className="flex items-center gap-2">
-                    <FileText size={18} className="text-purple-400" />
-                    <span className="text-sm font-bold text-white">Notice PDF</span>
+                    <FileText size={18} className="text-purple-400 flex-shrink-0" />
+                    <span className="text-sm font-bold text-white truncate max-w-[150px] xs:max-w-[200px]">Notice PDF</span>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 ml-auto">
                     <a
                         href={url}
                         download
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm text-white transition-all hover:opacity-90 active:scale-95"
+                        className="flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl font-bold text-xs sm:text-sm text-white transition-all hover:opacity-90 active:scale-95"
                         style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7)' }}
                     >
-                        <Download size={14} /> Download PDF
+                        <Download size={14} /> <span className="hidden xs:inline">Download</span>
                     </a>
                     <button
                         onClick={onClose}
-                        className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-all"
+                        className="p-2 w-8 h-8 flex items-center justify-center rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-all font-bold"
                     >
                         ✕
                     </button>
@@ -122,11 +122,11 @@ function PdfModal({ url, onClose }: { url: string; onClose: () => void }) {
             </div>
 
             {/* PDF Viewer */}
-            <div className="flex-1 overflow-hidden p-4">
+            <div className="flex-1 overflow-hidden p-2 sm:p-4">
                 <iframe
                     src={`${url}#toolbar=1&navpanes=0`}
-                    className="w-full h-full rounded-2xl"
-                    style={{ border: '1px solid rgba(255,255,255,0.08)', minHeight: '500px' }}
+                    className="w-full h-full rounded-xl sm:rounded-2xl"
+                    style={{ border: '1px solid rgba(255,255,255,0.08)', minHeight: '300px' }}
                     title="Notice PDF"
                 />
             </div>
@@ -227,6 +227,14 @@ function ClassCard({ cls, index }: { cls: ClassSchedule; index: number }) {
     const status = getClassStatus(cls.start_time, cls.end_time)
     const duration = getDuration(cls.start_time, cls.end_time)
     const isLive = status.label === 'LIVE NOW'
+    
+    const handleJoinClick = async () => {
+        const supabase = createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+            await supabase.from('class_clicks').insert({ user_id: user.id, class_id: cls.id })
+        }
+    }
 
     return (
         <div className="rounded-2xl p-5 transition-all duration-300 hover:translate-y-[-1px] animate-fade-in-up"
@@ -286,6 +294,7 @@ function ClassCard({ cls, index }: { cls: ClassSchedule; index: number }) {
 
                     {/* Join Button */}
                     <a href={cls.meet_link} target="_blank" rel="noopener noreferrer"
+                        onClick={handleJoinClick}
                         className={cn(
                             'inline-flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all duration-200',
                             isLive
@@ -387,7 +396,7 @@ export default function NoticePanelComponent() {
             </div>
 
             {/* Tab Navigation */}
-            <div className="flex gap-2 p-1 rounded-2xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <div className="flex flex-col sm:flex-row gap-2 p-1 rounded-2xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
                 <button
                     onClick={() => setActiveTab('notices')}
                     className={cn(

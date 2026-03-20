@@ -9,6 +9,7 @@ import {
     ChevronDown, CheckCircle, AlertCircle, X, Edit2, Trash2, Activity
 } from 'lucide-react'
 import UserRecordModal from './UserRecordModal'
+import { getBadgeColor } from '@/lib/badgeUtils'
 
 const ROLES = ['MEMBER', 'TEAM_TRAINER', 'TEAM_LEADER', 'ADMIN'] as const
 const STATUSES = ['INACTIVE', 'ACTIVE', 'SUSPENDED', 'BANNED'] as const
@@ -51,7 +52,13 @@ export default function AdminUsersPage() {
 
     const openEdit = (u: UserProfile) => {
         setEditUser(u)
-        setEditForm({ role: u.role, status: u.status, trainer_id: u.trainer_id || '', leader_id: u.leader_id || '', team_id: u.team_id || '' })
+        setEditForm({ 
+            role: u.role, 
+            status: u.status, 
+            trainer_id: u.trainer_id || '', 
+            leader_id: u.leader_id || '', 
+            team_id: u.team_id || ''
+        })
         setMessage({ type: '', text: '' })
     }
 
@@ -212,6 +219,7 @@ export default function AdminUsersPage() {
                                     <th>Name</th>
                                     <th>WhatsApp</th>
                                     <th>Role</th>
+                                    <th>Badge</th>
                                     <th>Status</th>
                                     <th>Referral Code</th>
                                     <th>Joined</th>
@@ -230,6 +238,11 @@ export default function AdminUsersPage() {
                                         </td>
                                         <td style={{ color: '#94a3b8' }}>{u.whatsapp}</td>
                                         <td><span className={cn('badge', getRoleColor(u.role))}>{getRoleLabel(u.role)}</span></td>
+                                        <td>
+                                            <span className={cn('badge text-[0.65rem] border truncate inline-block max-w-[100px]', getBadgeColor(u.badge))}>
+                                                {u.badge || 'Newbie'}
+                                            </span>
+                                        </td>
                                         <td><span className={cn('badge', getStatusColor(u.status))}>{u.status}</span></td>
                                         <td>
                                             <span className="font-mono text-xs" style={{ color: '#10b981' }}>{u.referral_code || '—'}</span>

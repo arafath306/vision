@@ -2,16 +2,17 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { UserProfile } from '@/lib/types'
 import { getRoleLabel, getRoleColor, cn } from '@/lib/utils'
+import { getBadgeColor, BadgeDefinition } from '@/lib/badgeUtils'
 import NotificationBell from '@/components/NotificationBell'
 import {
     Network, LayoutDashboard, Users, DollarSign, LogOut,
     Menu, X, Briefcase, Settings, ChevronDown, Bell,
     UserCircle, Database, FileText, Image, Video, Palette,
-    Package, ClipboardList, Share2, Lock, Megaphone, Store, Heart, ShoppingCart, BellDot
+    Package, ClipboardList, Share2, Lock, Megaphone, Store, Heart, ShoppingCart, BellDot, Award
 } from 'lucide-react'
 
 interface SidebarProps {
@@ -80,6 +81,7 @@ const adminNav = [
     { href: '/admin/teams/', label: 'Team Mapping', icon: Network },
     { href: '/admin/users/', label: 'Manage Users', icon: Users },
     { href: '/admin/blogs/', label: 'Manage Blogs', icon: FileText },
+    { href: '/admin/badges/', label: 'Manage Badges', icon: Award },
     { href: '/admin/notices/', label: 'Notice Panel', icon: BellDot },
     { href: '/admin/notifications/', label: 'Notifications', icon: Megaphone },
     { href: '/admin/activations/', label: 'Activations', icon: UserCircle },
@@ -149,7 +151,17 @@ export default function DashboardShell({ profile, children }: { profile: UserPro
     const pathname = usePathname()
     const router = useRouter()
     const [mobileOpen, setMobileOpen] = useState(false)
+    const [badges, setBadges] = useState<BadgeDefinition[]>([])
     const navItems = getNavItems(profile.role)
+
+    useEffect(() => {
+        const fetchBadges = async () => {
+            const supabase = createClient()
+            const { data } = await supabase.from('badges').select('*')
+            if (data) setBadges(data as BadgeDefinition[])
+        }
+        fetchBadges()
+    }, [])
 
     const handleLogout = async () => {
         const supabase = createClient()
@@ -181,9 +193,14 @@ export default function DashboardShell({ profile, children }: { profile: UserPro
                         style={{ background: 'linear-gradient(135deg, #0ea5e9, #10b981)', color: 'white' }}>
                         {profile.full_name.charAt(0).toUpperCase()}
                     </div>
-                    <div className="min-w-0">
-                        <div className="text-sm font-bold truncate mb-0.5" style={{ color: '#e2e8f0' }}>{profile.full_name}</div>
-                        <span className={cn('badge text-[0.65rem] py-0.5', getRoleColor(profile.role))}>{getRoleLabel(profile.role)}</span>
+                    <div className="min-w-0 flex flex-col items-start gap-1">
+                        <div className="text-sm font-bold truncate" style={{ color: '#e2e8f0' }}>{profile.full_name}</div>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className={cn('badge text-[0.6rem] py-0.5 px-1.5', getRoleColor(profile.role))}>{getRoleLabel(profile.role)}</span>
+                            <span className={cn('badge text-[0.6rem] py-0.5 px-1.5 truncate border text-center', getBadgeColor(profile.badge, badges))}>
+                                {badges.find(b => b.name === profile.badge)?.icon_emoji || '🏆'} {profile.badge || 'Newbie'}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>

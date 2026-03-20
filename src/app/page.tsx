@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 import {
@@ -95,7 +96,7 @@ export default function HomePage() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
               <Link href="/" className="flex items-center gap-3">
-                <img src="/logo.png" alt="SkyX Vision It Logo" className="w-10 h-10 object-contain" />
+                <Image src="/logo.png" alt="SkyX Vision It Logo" width={40} height={40} className="w-10 h-10 object-contain" />
                 <span className="font-bold text-lg" style={{ color: '#e2e8f0' }}>
                   SkyX <span style={{ color: '#0ea5e9' }}>Vision It</span>
                 </span>
@@ -315,10 +316,11 @@ export default function HomePage() {
                   <div className="glass-card-hover h-full flex flex-col overflow-hidden transition-all duration-300 transform group-hover/card:-translate-y-2">
                     {/* Thumbnail */}
                     <div className="h-32 overflow-hidden relative">
-                      <img
+                      <Image
                         src={s.thumbnail}
                         alt={s.title}
-                        className="w-full h-full object-cover grayscale-[0.2] group-hover/card:grayscale-0 group-hover/card:scale-110 transition-all duration-500"
+                        fill
+                        className="object-cover grayscale-[0.2] group-hover/card:grayscale-0 group-hover/card:scale-110 transition-all duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#0d1530] to-transparent opacity-60" />
                       <div className="absolute bottom-3 left-3 text-2xl">{s.icon}</div>
@@ -447,7 +449,7 @@ export default function HomePage() {
               {[...testimonials, ...testimonials].map((t, i) => (
                 <div key={i} className="glass-card-hover p-8 relative flex-shrink-0 w-[350px] flex flex-col">
                   <div className="flex items-center gap-4 mb-6">
-                    <img src={t.avatar} alt={t.name} className="w-12 h-12 rounded-full border-2 border-[#0ea5e9]" />
+                    <Image src={t.avatar} alt={t.name} width={48} height={48} className="w-12 h-12 rounded-full border-2 border-[#0ea5e9]" />
                     <div>
                       <h4 className="font-bold shrink-0" style={{ color: '#e2e8f0' }}>{t.name}</h4>
                       <div className="text-xs text-[#0ea5e9] font-semibold">{t.role}</div>
@@ -473,9 +475,11 @@ export default function HomePage() {
             <div className="order-2 md:order-1 relative group">
               <div className="absolute -inset-4 bg-gradient-to-r from-[#0ea5e9] to-[#10b981] rounded-3xl blur opacity-10 group-hover:opacity-20 transition duration-1000"></div>
               <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
-                <img
+                <Image
                   src="https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=800&q=80"
                   alt="Customer Support Excellence"
+                  width={800}
+                  height={500}
                   className="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f1e] via-transparent to-transparent opacity-60" />
@@ -669,7 +673,7 @@ export default function HomePage() {
             {/* Column 1: Brand */}
             <div className="space-y-6">
               <div className="flex items-center gap-3">
-                <img src="/logo.png" alt="SkyX Vision It Logo" className="w-10 h-10 object-contain" />
+                <Image src="/logo.png" alt="SkyX Vision It Logo" width={40} height={40} className="w-10 h-10 object-contain" />
                 <span className="font-bold text-xl" style={{ color: '#e2e8f0' }}>SkyX Vision It</span>
               </div>
               <p className="text-sm leading-relaxed" style={{ color: '#94a3b8' }}>

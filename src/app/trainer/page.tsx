@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { formatCurrency, formatDate, getStatusColor } from '@/lib/utils'
 import { Users, DollarSign, TrendingUp, UserCheck } from 'lucide-react'
+import { evaluateAutoBadge } from '@/lib/badgeUtils'
 import Link from 'next/link'
 import LiveMeetingBanner from '@/components/LiveMeetingBanner'
 
@@ -9,6 +10,10 @@ export default async function TrainerDashboard() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect('/auth/login')
+
+    const p = user as any; // Need profile access
+    const { data: profile } = await supabase.from('users').select('*').eq('id', user.id).single()
+    if (!profile) redirect('/auth/login')
 
     // Get trainer's members
     const { data: members } = await supabase
@@ -36,6 +41,14 @@ export default async function TrainerDashboard() {
         .eq('status', 'PAID')
     const paid = (paidWD || []).reduce((s, w) => s + w.amount, 0)
     const withdrawable = totalCommissions - paid
+    const { data: badges } = await supabase.from('badges').select('*')
+
+    // Auto Badge Assignment
+    const evaluatedBadge = evaluateAutoBadge(profile.role, members?.length || 0, totalCommissions, profile.badge || null, (badges || []) as any)
+    if (evaluatedBadge !== (profile.badge || 'Newbie') && evaluatedBadge !== profile.badge) {
+        await supabase.from('users').update({ badge: evaluatedBadge }).eq('id', user.id)
+        profile.badge = evaluatedBadge
+    }
 
     return (
         <div className="space-y-6 animate-fade-in-up">

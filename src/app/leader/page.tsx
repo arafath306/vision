@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { formatCurrency, formatDate, getStatusColor, getRoleLabel } from '@/lib/utils'
 import { Users, DollarSign, TrendingUp, UserCheck, Award } from 'lucide-react'
+import { evaluateAutoBadge } from '@/lib/badgeUtils'
 import Link from 'next/link'
 import LiveMeetingBanner from '@/components/LiveMeetingBanner'
 
@@ -9,6 +10,9 @@ export default async function LeaderDashboard() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect('/auth/login')
+
+    const { data: profile } = await supabase.from('users').select('*').eq('id', user.id).single()
+    if (!profile) redirect('/auth/login')
 
     // Get trainers under this leader
     const { data: trainers } = await supabase
@@ -44,6 +48,14 @@ export default async function LeaderDashboard() {
     const withdrawable = totalCommissions - paid
 
     const activeMembers = (allMembers || []).filter(m => m.status === 'ACTIVE').length
+    const { data: badges } = await supabase.from('badges').select('*')
+
+    // Auto Badge Assignment
+    const evaluatedBadge = evaluateAutoBadge(profile.role, (allMembers || []).length, totalCommissions, profile.badge || null, (badges || []) as any)
+    if (evaluatedBadge !== (profile.badge || 'Newbie') && evaluatedBadge !== profile.badge) {
+        await supabase.from('users').update({ badge: evaluatedBadge }).eq('id', user.id)
+        profile.badge = evaluatedBadge
+    }
 
     return (
         <div className="space-y-6 animate-fade-in-up">

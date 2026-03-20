@@ -20,6 +20,7 @@ export interface UserProfile {
     avatar_url?: string
     address?: string
     gender?: string
+    badge?: string
     created_at: string
 }
 

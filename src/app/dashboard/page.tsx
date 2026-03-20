@@ -6,6 +6,7 @@ import {
     DollarSign, Users, TrendingUp, Calendar, Clock,
     Copy, AlertCircle, MessageCircle, Award
 } from 'lucide-react'
+import { evaluateAutoBadge } from '@/lib/badgeUtils'
 
 async function getDashboardStats(userId: string) {
     const supabase = await createClient()
@@ -150,6 +151,14 @@ export default async function MemberDashboard() {
     }
 
     const stats = await getDashboardStats(user.id)
+    const { data: badges } = await supabase.from('badges').select('*')
+
+    // Auto Badge Assignment
+    const evaluatedBadge = evaluateAutoBadge(p.role, stats.referral_count, stats.total_income, p.badge || null, (badges || []) as any)
+    if (evaluatedBadge !== (p.badge || 'Newbie') && evaluatedBadge !== p.badge) {
+        await supabase.from('users').update({ badge: evaluatedBadge }).eq('id', user.id)
+        p.badge = evaluatedBadge
+    }
 
     const mainStats = [
         { label: 'Withdrawable Balance', value: formatCurrency(stats.withdrawable_balance), icon: DollarSign, color: '#10b981', main: true },

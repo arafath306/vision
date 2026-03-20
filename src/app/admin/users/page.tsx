@@ -22,9 +22,10 @@ export default function AdminUsersPage() {
     const [filterRole, setFilterRole] = useState('')
     const [editUser, setEditUser] = useState<UserProfile | null>(null)
     const [recordUser, setRecordUser] = useState<UserProfile | null>(null)
-    const [editForm, setEditForm] = useState({ role: '', status: '', trainer_id: '', leader_id: '' })
+    const [editForm, setEditForm] = useState({ role: '', status: '', trainer_id: '', leader_id: '', team_id: '' })
     const [trainers, setTrainers] = useState<UserProfile[]>([])
     const [leaders, setLeaders] = useState<UserProfile[]>([])
+    const [teams, setTeams] = useState<any[]>([])
     const [saving, setSaving] = useState(false)
     const [message, setMessage] = useState({ type: '', text: '' })
 
@@ -38,8 +39,11 @@ export default function AdminUsersPage() {
 
         const { data: trainerData } = await supabase.from('users').select('*').eq('role', 'TEAM_TRAINER').eq('status', 'ACTIVE')
         const { data: leaderData } = await supabase.from('users').select('*').eq('role', 'TEAM_LEADER').eq('status', 'ACTIVE')
+        const { data: teamsData } = await supabase.from('teams').select('*')
+        
         setTrainers((trainerData || []) as UserProfile[])
         setLeaders((leaderData || []) as UserProfile[])
+        setTeams(teamsData || [])
         setLoading(false)
     }, [filterStatus, filterRole])
 
@@ -47,7 +51,7 @@ export default function AdminUsersPage() {
 
     const openEdit = (u: UserProfile) => {
         setEditUser(u)
-        setEditForm({ role: u.role, status: u.status, trainer_id: u.trainer_id || '', leader_id: u.leader_id || '' })
+        setEditForm({ role: u.role, status: u.status, trainer_id: u.trainer_id || '', leader_id: u.leader_id || '', team_id: u.team_id || '' })
         setMessage({ type: '', text: '' })
     }
 
@@ -71,6 +75,39 @@ export default function AdminUsersPage() {
             status: editForm.status,
             trainer_id: editForm.trainer_id || null,
             leader_id: resolvedLeaderId,
+            team_id: editForm.team_id || null
+        }
+
+        // Automatic Team Management
+        if (editForm.role === 'TEAM_LEADER' && editUser.role !== 'TEAM_LEADER') {
+            // Check if they already have a team
+            const existingTeam = teams.find(t => t.leader_id === editUser.id)
+            if (!existingTeam) {
+                const { data: newTeam } = await supabase.from('teams').insert({
+                    name: `${editUser.full_name}'s Team`,
+                    leader_id: editUser.id
+                }).select().single()
+                if (newTeam) updates.team_id = newTeam.id
+            }
+        }
+        
+        if (editUser.role === 'TEAM_LEADER' && editForm.role !== 'TEAM_LEADER') {
+            await supabase.from('teams').delete().eq('leader_id', editUser.id)
+            // Users assigned to this team will have team_id set to NULL auto via ON DELETE SET NULL
+        }
+
+        if (editForm.role === 'TEAM_TRAINER' && updates.team_id) {
+            // Ensure they are mapped as a trainer for this team
+            const { data: existingTT } = await supabase.from('team_trainers').select('*').eq('trainer_id', editUser.id).eq('team_id', updates.team_id).single()
+            if (!existingTT) {
+                // Remove from previous teams
+                await supabase.from('team_trainers').delete().eq('trainer_id', editUser.id)
+                await supabase.from('team_trainers').insert({ team_id: updates.team_id, trainer_id: editUser.id })
+            }
+        }
+        
+        if (editUser.role === 'TEAM_TRAINER' && editForm.role !== 'TEAM_TRAINER') {
+            await supabase.from('team_trainers').delete().eq('trainer_id', editUser.id)
         }
 
         // If activating, create commissions
@@ -220,8 +257,8 @@ export default function AdminUsersPage() {
 
             {/* Edit Modal */}
             {editUser && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.7)' }}>
-                    <div className="glass-card p-6 w-full max-w-md" style={{ background: '#0d1530' }}>
+                <div className="fixed inset-0 z-[100] flex items-start justify-center p-4 sm:p-6 overflow-y-auto animate-fade-in" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}>
+                    <div className="glass-card p-6 w-full max-w-md my-6 sm:my-12 shadow-2xl" style={{ background: '#0d1530' }}>
                         <div className="flex items-center justify-between mb-5">
                             <h2 className="font-bold text-lg" style={{ color: '#e2e8f0' }}>Edit User</h2>
                             <button onClick={() => setEditUser(null)} style={{ color: '#64748b' }}><X size={20} /></button>
@@ -281,6 +318,21 @@ export default function AdminUsersPage() {
                                     <option value="">No Leader</option>
                                     {leaders.map(l => <option key={l.id} value={l.id}>{l.full_name} ({l.whatsapp})</option>)}
                                 </select>
+                            </div>
+
+                            <div>
+                                <label className="form-label">Assign to Team</label>
+                                <select id="edit-team" className="select-field"
+                                    value={editForm.team_id}
+                                    onChange={e => setEditForm(p => ({ ...p, team_id: e.target.value }))}
+                                    disabled={editForm.role === 'TEAM_LEADER'} // Leaders own a team implicitly
+                                >
+                                    <option value="">No Team</option>
+                                    {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                                </select>
+                                {editForm.role === 'TEAM_LEADER' && (
+                                    <p className="text-[10px] mt-1 text-sky-400">Team Leaders automatically get their own team created.</p>
+                                )}
                             </div>
 
                             <div className="flex gap-3 pt-2">

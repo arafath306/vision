@@ -15,6 +15,7 @@ export interface UserProfile {
     status: UserStatus
     trainer_id: string | null
     leader_id: string | null
+    team_id: string | null
     bio?: string
     avatar_url?: string
     address?: string

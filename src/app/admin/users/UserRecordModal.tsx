@@ -16,6 +16,8 @@ interface RecordStats {
     totalClicks: number
     trainerName: string | null
     leaderName: string | null
+    referrerName: string | null
+    referrerCode: string | null
 }
 
 interface UserRecordModalProps {
@@ -32,7 +34,9 @@ export default function UserRecordModal({ user, onClose }: UserRecordModalProps)
         totalDirectReferrals: 0,
         totalClicks: 0,
         trainerName: null,
-        leaderName: null
+        leaderName: null,
+        referrerName: null,
+        referrerCode: null
     })
     const [leadChartData, setLeadChartData] = useState<any[]>([])
     const [earningChartData, setEarningChartData] = useState<any[]>([])
@@ -70,8 +74,8 @@ export default function UserRecordModal({ user, onClose }: UserRecordModalProps)
                 .select('id', { count: 'exact', head: true })
                 .eq('user_id', user.id)
 
-            // 5. Trainer and Leader info
-            let tName = null, lName = null
+            // 5. Trainer, Leader, and Referrer info
+            let tName = null, lName = null, rName = null, rCode = null
             if (user.trainer_id) {
                 const { data: trData } = await supabase.from('users').select('full_name').eq('id', user.trainer_id).single()
                 if (trData) tName = trData.full_name
@@ -80,6 +84,13 @@ export default function UserRecordModal({ user, onClose }: UserRecordModalProps)
                 const { data: ldData } = await supabase.from('users').select('full_name').eq('id', user.leader_id).single()
                 if (ldData) lName = ldData.full_name
             }
+            if (user.referred_by) {
+                const { data: refData } = await supabase.from('users').select('full_name, referral_code').eq('id', user.referred_by).single()
+                if (refData) {
+                    rName = refData.full_name
+                    rCode = refData.referral_code
+                }
+            }
 
             setStats({
                 totalEarnings: totalEarned,
@@ -87,7 +98,9 @@ export default function UserRecordModal({ user, onClose }: UserRecordModalProps)
                 totalDirectReferrals: refCount || 0,
                 totalClicks: clicksCount || 0,
                 trainerName: tName,
-                leaderName: lName
+                leaderName: lName,
+                referrerName: rName,
+                referrerCode: rCode
             })
 
             // 6. Build Lead Chart Data (Only useful if they are a Trainer or Leader, or referring people)
@@ -130,8 +143,8 @@ export default function UserRecordModal({ user, onClose }: UserRecordModalProps)
     }, [user, supabase])
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-fade-in" style={{ background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)' }}>
-            <div className="glass-card w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden" style={{ background: '#0a0f1e', borderColor: 'rgba(255,255,255,0.1)' }}>
+        <div className="fixed inset-0 z-[100] flex items-start justify-center p-4 sm:p-6 overflow-y-auto animate-fade-in" style={{ background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)' }}>
+            <div className="glass-card w-full max-w-5xl my-6 sm:my-10 flex flex-col overflow-hidden shadow-2xl" style={{ background: '#0a0f1e', borderColor: 'rgba(255,255,255,0.1)' }}>
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-5 border-b gap-3 flex-shrink-0" style={{ borderColor: 'rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.02)' }}>
                     <div className="flex-1">
@@ -205,6 +218,17 @@ export default function UserRecordModal({ user, onClose }: UserRecordModalProps)
                                         <Users size={16} className="text-slate-400" /> Uplines
                                     </h3>
                                     <div className="space-y-3">
+                                        <div className="flex justify-between items-center text-sm pb-2 border-b" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
+                                            <span className="text-slate-500">Referred By (Lead)</span>
+                                            <div className="text-right">
+                                                <span className={cn('block font-bold', stats.referrerName ? 'text-emerald-400' : 'text-slate-600')}>
+                                                    {stats.referrerName || 'None'}
+                                                </span>
+                                                {stats.referrerCode && (
+                                                    <span className="text-[10px] text-slate-500 font-mono">Code: {stats.referrerCode}</span>
+                                                )}
+                                            </div>
+                                        </div>
                                         <div className="flex justify-between items-center text-sm">
                                             <span className="text-slate-500">Trainer Name</span>
                                             <span className={cn('font-bold', stats.trainerName ? 'text-sky-400' : 'text-slate-600')}>

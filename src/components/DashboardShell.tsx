@@ -77,6 +77,7 @@ const adminNav = [
     { href: '/admin/', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/admin/profile/', label: 'My Profile', icon: UserCircle },
     { href: '/admin/meetings/', label: 'Meetings', icon: Video },
+    { href: '/admin/teams/', label: 'Team Mapping', icon: Network },
     { href: '/admin/users/', label: 'Manage Users', icon: Users },
     { href: '/admin/blogs/', label: 'Manage Blogs', icon: FileText },
     { href: '/admin/notices/', label: 'Notice Panel', icon: BellDot },

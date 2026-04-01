@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 import {
   Network, Target, Users, TrendingUp, Shield, Award,
   ChevronRight, Mail, Phone, MapPin, MessageCircle,
-  CheckCircle, Star, Briefcase, ArrowRight, Menu, X
+  CheckCircle, Star, Briefcase, ArrowRight, Menu, X, Download
 } from 'lucide-react'
 import { courses } from '@/data/courses'
 
@@ -36,6 +36,7 @@ export default function HomePage() {
 
   const [activeFaq, setActiveFaq] = useState<number | null>(null)
   const [showCoffeeNumber, setShowCoffeeNumber] = useState(false)
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
 
 
 
@@ -77,7 +78,28 @@ export default function HomePage() {
     }
   }, [])
 
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: any) => {
+      e.preventDefault()
+      setDeferredPrompt(e)
+    }
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+    }
+  }, [])
 
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt()
+      const { outcome } = await deferredPrompt.userChoice
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null)
+      }
+    } else {
+      alert('To install the app, open your browser menu and select "Install App" or "Add to Home Screen".')
+    }
+  }
 
 
   const handleContact = (e: React.FormEvent) => {
@@ -732,7 +754,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="pt-8 border-t border-[#1e3a5f] flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="mt-12 pt-8 border-t border-[#1e3a5f] flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="text-sm" style={{ color: '#64748b' }}>
               © 2026 SkyX Vision It. All rights reserved. Developed by Arafath. {' '}
               <button
@@ -742,7 +764,10 @@ export default function HomePage() {
                 {showCoffeeNumber ? '01313961899 (Bkash)' : 'Give him a coffee ☕'}
               </button>
             </div>
-            <div className="flex gap-6">
+            <div className="flex items-center gap-6">
+              <button onClick={handleInstallClick} className="text-xs font-bold px-3 py-1.5 rounded-lg border border-[#0ea5e9]/30 text-[#0ea5e9] hover:bg-[#0ea5e9]/10 transition-all flex items-center gap-1.5">
+                <Download size={14} /> GET THE APP
+              </button>
               <Link href="/auth/login" className="text-xs font-semibold hover:text-[#0ea5e9] transition-colors" style={{ color: '#94a3b8' }}>ADMIN LOGIN</Link>
               <Link href="/auth/register" className="text-xs font-semibold hover:text-[#10b981] transition-colors" style={{ color: '#94a3b8' }}>REGISTER PARTNER</Link>
             </div>

@@ -93,6 +93,7 @@ const adminNav = [
     { href: '/admin/activations/', label: 'Activations', icon: UserCircle },
     { href: '/admin/withdrawals/', label: 'Withdrawals', icon: DollarSign },
     { href: '/admin/commissions/', label: 'Commissions', icon: DollarSign },
+    { href: '/admin/passbook/', label: 'Manage Passbook', icon: BookOpen },
     { href: '/admin/ecommerce/products/', label: 'Manage Products', icon: Package },
     { href: '/admin/ecommerce/orders/', label: 'Manage Orders', icon: ClipboardList },
     { href: '/admin/settings/', label: 'Settings', icon: Settings },

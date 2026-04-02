@@ -1,3 +1,5 @@
+'use client'
+
 import { ArrowRight, Briefcase, Code, GraduationCap, Megaphone, ShieldCheck, Users, Star, MonitorPlay } from 'lucide-react'
 import Link from 'next/link'
 

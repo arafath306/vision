@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
@@ -10,6 +10,32 @@ export default function NewFormFillup() {
     const router = useRouter()
     const [submitting, setSubmitting] = useState(false)
     const [error, setError] = useState('')
+    const [isChecking, setIsChecking] = useState(true)
+    const [isAssigned, setIsAssigned] = useState(false)
+
+    useEffect(() => {
+        const checkAssignment = async () => {
+            const supabase = createClient()
+            try {
+                const { data: { user } } = await supabase.auth.getUser()
+                if (!user) return
+                
+                const { data } = await supabase.from('users').select('trainer_id, leader_id').eq('id', user.id).single()
+                
+                // If they have a trainer or leader assigned, they can submit forms
+                if (data && (data.trainer_id || data.leader_id)) {
+                    setIsAssigned(true)
+                } else {
+                    setIsAssigned(false)
+                }
+            } catch (err) {
+                console.error(err)
+            } finally {
+                setIsChecking(false)
+            }
+        }
+        checkAssignment()
+    }, [])
 
     const [form, setForm] = useState({
         fullName: '',
@@ -83,6 +109,33 @@ export default function NewFormFillup() {
             setError(err.message || 'Failed to submit the form.')
             setSubmitting(false)
         }
+    }
+
+    if (isChecking) {
+        return (
+            <div className="flex items-center justify-center p-20 animate-fade-in-up">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-10 h-10 border-4 border-sky-500/30 border-t-sky-500 rounded-full animate-spin" />
+                    <p className="text-slate-400 font-semibold">Verifying team access...</p>
+                </div>
+            </div>
+        )
+    }
+
+    if (!isAssigned) {
+        return (
+            <div className="max-w-2xl mx-auto mt-10 p-8 glass-card border border-amber-500/20 text-center animate-fade-in-up">
+                <div className="w-16 h-16 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center mx-auto mb-4">
+                    <Shield size={32} />
+                </div>
+                <h2 className="text-xl font-bold text-white mb-2">Access Denied</h2>
+                <p className="text-slate-400 mb-6 font-medium">You are currently not assigned to any specific Team Leader or Trainer.</p>
+                <div className="bg-white/5 p-4 rounded-xl text-sm text-slate-300 mb-6">
+                    A system administrator must assign you to a team first before you are allowed to fill up forms. Please contact your admin for team placement.
+                </div>
+                <Link href="/dashboard/tasks/form-fillup" className="btn-primary w-full justify-center">Return to Safety</Link>
+            </div>
+        )
     }
 
     return (

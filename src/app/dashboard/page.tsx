@@ -72,6 +72,7 @@ async function getDashboardStats(userId: string) {
 
 import ReferralBanner from '@/components/ReferralBanner'
 import LiveMeetingBanner from '@/components/LiveMeetingBanner'
+import DashboardHero from '@/components/DashboardHero'
 
 export default async function MemberDashboard() {
     const supabase = await createClient()
@@ -188,6 +189,9 @@ export default async function MemberDashboard() {
                     <span className="text-xs font-bold text-slate-300 tracking-wide">{new Date().toLocaleDateString('en-BD', { weekday: 'long', day: 'numeric', month: 'short' })}</span>
                 </div>
             </div>
+
+            {/* Dashboard Hero Banner and Tasks */}
+            <DashboardHero />
 
             {/* Live Meeting Notification */}
             <LiveMeetingBanner />

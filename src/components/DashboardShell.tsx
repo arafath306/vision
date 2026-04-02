@@ -12,7 +12,7 @@ import {
     Network, LayoutDashboard, Users, DollarSign, LogOut,
     Menu, X, Briefcase, Settings, ChevronDown, Bell,
     UserCircle, Database, FileText, Image, Video, Palette,
-    Package, ClipboardList, Share2, Lock, Megaphone, Store, Heart, ShoppingCart, BellDot, Award, BookOpen, ShieldCheck
+    Package, ClipboardList, Share2, Lock, Megaphone, Store, Heart, ShoppingCart, BellDot, Award, BookOpen, ShieldCheck, Sparkles
 } from 'lucide-react'
 
 interface SidebarProps {
@@ -21,6 +21,7 @@ interface SidebarProps {
 
 const memberNav = [
     { href: '/dashboard/', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/dashboard/my-room/', label: 'My Room', icon: Sparkles },
     {
         label: 'Updates', icon: BellDot, children: [
             { href: '/dashboard/notices/', label: 'Notice Panel', icon: BellDot },
@@ -142,6 +143,7 @@ const adminNav = [
         label: 'System Management', icon: ShieldCheck, children: [
             { href: '/admin/teams/', label: 'Team Mapping', icon: Network },
             { href: '/admin/users/', label: 'Manage Users', icon: Users },
+            { href: '/admin/room-control/', label: 'Room Control', icon: Sparkles },
             { href: '/admin/forms/', label: 'Form Fillups', icon: FileText },
             { href: '/admin/badges/', label: 'Manage Badges', icon: Award },
         ]

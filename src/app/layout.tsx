@@ -31,6 +31,20 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
+                // Register Service Worker for PWA
+                if ('serviceWorker' in navigator) {
+                  window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/sw.js').then(
+                      function(registration) {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                      },
+                      function(err) {
+                        console.log('ServiceWorker registration failed: ', err);
+                      }
+                    );
+                  });
+                }
+
                 // Prevent infinite reload loops
                 var reloadKey = 'pwa_reload_count';
                 // Wrap storage in try-catch since mobile webviews or incognito modes throw SecurityErrors

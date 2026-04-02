@@ -97,7 +97,13 @@ export default function HomePage() {
         setDeferredPrompt(null)
       }
     } else {
-      alert('To install the app, open your browser menu and select "Install App" or "Add to Home Screen".')
+      // Logic for various browsers
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+      if (isIOS) {
+        alert('To install on iPhone: Tap the Share button at the bottom and select "Add to Home Screen".');
+      } else {
+        alert('To install the app, open your browser menu (usually three dots ⋮ or ⋯) and select "Install App" or "Add to Home Screen".');
+      }
     }
   }
 
@@ -242,9 +248,13 @@ export default function HomePage() {
                 <Link href="/auth/register" className="btn-primary w-full sm:w-auto justify-center" style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}>
                   Join Now — It&apos;s Free <ArrowRight size={18} />
                 </Link>
-                <Link href="/auth/login" className="btn-outline w-full sm:w-auto justify-center border-white/20 text-white hover:bg-white/10" style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}>
-                  Member Login
-                </Link>
+                <button 
+                  onClick={handleInstallClick}
+                  className="btn-outline w-full sm:w-auto justify-center border-white/20 text-white hover:bg-white/10 flex items-center gap-2" 
+                  style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}
+                >
+                  <Download size={20} /> GET THE APP 💌
+                </button>
               </div>
             </div>
           </div>

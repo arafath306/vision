@@ -55,9 +55,7 @@ export default async function TrainerMembersPage() {
 
             <div className="grid sm:grid-cols-3 gap-4">
                 {[
-                    { label: 'Total', value: (members || []).length, color: '#0ea5e9' },
                     { label: 'Active', value: (members || []).filter(m => m.status === 'ACTIVE').length, color: '#10b981' },
-                    { label: 'Inactive', value: (members || []).filter(m => m.status !== 'ACTIVE').length, color: '#f59e0b' },
                 ].map(s => (
                     <div key={s.label} className="stat-card">
                         <div className="text-xs font-semibold mb-2 uppercase" style={{ color: '#64748b' }}>{s.label}</div>

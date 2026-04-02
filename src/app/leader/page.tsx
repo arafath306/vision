@@ -14,6 +14,10 @@ export default async function LeaderDashboard() {
     const { data: profile } = await supabase.from('users').select('*').eq('id', user.id).single()
     if (!profile) redirect('/auth/login')
 
+    // Get Teams the leader manages
+    const { data: myTeams } = await supabase.from('teams').select('id, name').eq('leader_id', user.id)
+    const teamIds = (myTeams || []).map(t => t.id)
+
     // Get trainers under this leader
     const { data: trainers } = await supabase
         .from('users')
@@ -24,14 +28,21 @@ export default async function LeaderDashboard() {
 
     const trainerIds = (trainers || []).map(t => t.id)
 
-    // Get all members under those trainers
-    const { data: allMembers } = trainerIds.length
-        ? await supabase
-            .from('users')
-            .select('id, full_name, whatsapp, status, trainer_id, created_at')
-            .in('trainer_id', trainerIds)
-            .order('created_at', { ascending: false })
-        : { data: [] }
+    // Construct query for all members under teams or trainers
+    let query = supabase
+        .from('users')
+        .select('id, full_name, whatsapp, status, trainer_id, created_at')
+        .eq('role', 'MEMBER')
+        
+    const orConditions = []
+    if (teamIds.length > 0) orConditions.push(`team_id.in.(${teamIds.join(',')})`)
+    if (trainerIds.length > 0) orConditions.push(`trainer_id.in.(${trainerIds.join(',')})`)
+    
+    let allMembers: any[] = []
+    if (orConditions.length > 0) {
+        const { data } = await query.or(orConditions.join(',')).order('created_at', { ascending: false })
+        allMembers = data || []
+    }
 
     // Leader commissions
     const { data: commissions } = await supabase
@@ -70,7 +81,6 @@ export default async function LeaderDashboard() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
                     { label: 'My Trainers', value: (trainers || []).length, icon: Users, color: '#0ea5e9' },
-                    { label: 'Total Members', value: (allMembers || []).length, icon: Award, color: '#10b981' },
                     { label: 'Active Members', value: activeMembers, icon: UserCheck, color: '#8b5cf6' },
                     { label: 'Withdrawable', value: formatCurrency(withdrawable), icon: TrendingUp, color: '#f59e0b' },
                 ].map(s => (

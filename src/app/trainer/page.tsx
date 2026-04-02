@@ -15,12 +15,22 @@ export default async function TrainerDashboard() {
     const { data: profile } = await supabase.from('users').select('*').eq('id', user.id).single()
     if (!profile) redirect('/auth/login')
 
-    // Get trainer's members
-    const { data: members } = await supabase
+    // Get Teams the trainer belongs to
+    const { data: myTeams } = await supabase.from('team_trainers').select('team_id').eq('trainer_id', user.id)
+    const teamIds = (myTeams || []).map(t => t.team_id)
+
+    let query = supabase
         .from('users')
         .select('id, full_name, whatsapp, status, created_at, referred_by')
-        .eq('trainer_id', user.id)
-        .order('created_at', { ascending: false })
+        .eq('role', 'MEMBER')
+        
+    if (teamIds.length > 0) {
+        query = query.or(`trainer_id.eq.${user.id},team_id.in.(${teamIds.join(',')})`)
+    } else {
+        query = query.eq('trainer_id', user.id)
+    }
+
+    const { data: members } = await query.order('created_at', { ascending: false })
 
     // Commissions
     const { data: commissions } = await supabase
@@ -62,7 +72,6 @@ export default async function TrainerDashboard() {
             {/* Stat Cards */}
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                    { label: 'Total Members', value: (members || []).length, icon: Users, color: '#0ea5e9' },
                     { label: 'Active Members', value: activeMembers, icon: UserCheck, color: '#10b981' },
                     { label: 'Total Commissions', value: formatCurrency(totalCommissions), icon: DollarSign, color: '#8b5cf6' },
                     { label: 'Withdrawable', value: formatCurrency(withdrawable), icon: TrendingUp, color: '#f59e0b' },

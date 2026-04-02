@@ -66,7 +66,6 @@ export default async function LeaderMembersPage() {
                     { label: 'Total Members', value: members.length, color: '#a855f7' },
                     { label: 'Teams Managed', value: teamIds.length, color: '#38bdf8' },
                     { label: 'Active Members', value: members.filter(m => m.status === 'ACTIVE').length, color: '#10b981' },
-                    { label: 'Inactive Members', value: members.filter(m => m.status !== 'ACTIVE').length, color: '#f59e0b' },
                 ].map(s => (
                     <div key={s.label} className="stat-card p-4 rounded-xl border border-slate-800 bg-slate-900 shadow-xl">
                         <div className="text-[10px] font-bold mb-1 uppercase tracking-wider" style={{ color: '#94a3b8' }}>{s.label}</div>

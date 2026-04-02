@@ -12,7 +12,7 @@ import {
     Network, LayoutDashboard, Users, DollarSign, LogOut,
     Menu, X, Briefcase, Settings, ChevronDown, Bell,
     UserCircle, Database, FileText, Image, Video, Palette,
-    Package, ClipboardList, Share2, Lock, Megaphone, Store, Heart, ShoppingCart, BellDot, Award, BookOpen
+    Package, ClipboardList, Share2, Lock, Megaphone, Store, Heart, ShoppingCart, BellDot, Award, BookOpen, BookText
 } from 'lucide-react'
 
 interface SidebarProps {
@@ -26,6 +26,7 @@ const memberNav = [
     { href: '/dashboard/profile/', label: 'My Profile', icon: UserCircle },
     { href: '/dashboard/referrals/', label: 'My Fields', icon: Users },
     { href: '/dashboard/withdraw/', label: 'Withdraw', icon: DollarSign },
+    { href: '/dashboard/passbook/', label: 'My Passbook', icon: BookText },
     {
         label: 'Task Categories', icon: Briefcase, children: [
             { href: '/dashboard/tasks/data-entry/', label: 'Data Entry', icon: Database },

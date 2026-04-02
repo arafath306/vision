@@ -766,7 +766,7 @@ export default function HomePage() {
             </div>
             <div className="flex items-center gap-6">
               <button onClick={handleInstallClick} className="text-xs font-bold px-3 py-1.5 rounded-lg border border-[#0ea5e9]/30 text-[#0ea5e9] hover:bg-[#0ea5e9]/10 transition-all flex items-center gap-1.5">
-                <Download size={14} /> GET THE APP
+                <Download size={14} /> GET THE APP 💌
               </button>
               <Link href="/auth/login" className="text-xs font-semibold hover:text-[#0ea5e9] transition-colors" style={{ color: '#94a3b8' }}>ADMIN LOGIN</Link>
               <Link href="/auth/register" className="text-xs font-semibold hover:text-[#10b981] transition-colors" style={{ color: '#94a3b8' }}>REGISTER PARTNER</Link>

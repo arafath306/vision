@@ -61,6 +61,8 @@ export interface SystemSettings {
     trainer_percentage: number
     leader_percentage: number
     activation_fee: number
+    is_maintenance_mode?: boolean
+    maintenance_developer?: string
 }
 
 export interface DashboardStats {

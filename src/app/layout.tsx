@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import TelemetryProvider from '@/components/TelemetryProvider'
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://skyxvision.com'),
@@ -90,7 +91,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body suppressHydrationWarning>{children}</body>
+      <body suppressHydrationWarning>
+        <TelemetryProvider />
+        {children}
+      </body>
     </html>
   )
 }

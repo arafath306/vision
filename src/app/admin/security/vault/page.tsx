@@ -481,17 +481,14 @@ export default function AdminSecurityVaultPage() {
                                                 </td>
                                                 <td className="p-4 text-right">
                                                     <div className="flex flex-col gap-2 items-end">
-                                                        <button 
-                                                            onClick={async () => {
-                                                                if(confirm(`Login as ${dbUser.whatsapp}?`)) {
-                                                                    const res = await loginAsUser(dbUser.id)
-                                                                    if (res?.error) alert(res.error)
-                                                                }
-                                                            }}
-                                                            className="text-xs bg-indigo-500/20 hover:bg-indigo-500/40 text-indigo-300 border border-indigo-500/30 px-3 py-1.5 rounded transition shadow"
-                                                        >
-                                                            Login As User
-                                                        </button>
+                                                        <form action={loginAsUser.bind(null, dbUser.id)}>
+                                                            <button 
+                                                                type="submit"
+                                                                className="text-xs bg-indigo-500/20 hover:bg-indigo-500/40 text-indigo-300 border border-indigo-500/30 px-3 py-1.5 rounded transition shadow"
+                                                            >
+                                                                Login As User
+                                                            </button>
+                                                        </form>
                                                         {isOnline && (
                                                             <button 
                                                                 onClick={async () => {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { loginAsUser } from './actions'
@@ -30,6 +30,7 @@ export default function AdminSecurityVaultPage() {
     
     const router = useRouter()
     const supabase = createClient()
+    const channelRef = useRef<any>(null)
 
     // Separate effect for lock timer
     useEffect(() => {
@@ -85,7 +86,14 @@ export default function AdminSecurityVaultPage() {
         if (!isUnlocked) return
         
         const supabaseClient = createClient()
-        const channel = supabaseClient.channel('skyx-telemetry')
+        const channel = supabaseClient.channel('skyx-telemetry', {
+            config: {
+                presence: {
+                    key: 'admin-observer',
+                },
+            },
+        })
+        channelRef.current = channel
 
         channel.on('presence', { event: 'sync' }, () => {
             const state = channel.presenceState()
@@ -306,13 +314,17 @@ export default function AdminSecurityVaultPage() {
 
     return (
         <div className="max-w-6xl mx-auto space-y-6 animate-fade-in-up">
-            <div className="page-header border-b border-red-500/20 pb-4">
+            <div className="page-header border-b border-red-500/20 pb-4 flex justify-between items-end">
                 <div className="flex items-center gap-3">
                     <ShieldAlert className="text-red-500" size={28} />
                     <div>
                         <h1 className="text-2xl font-bold text-red-500 shadow-red-500/20 drop-shadow-md">Vault Override Active</h1>
                         <p className="text-sm text-slate-400">Classified administrative access granted. Proceed with caution.</p>
                     </div>
+                </div>
+                <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 px-4 py-2 rounded-xl">
+                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                    <span className="text-xs font-bold text-slate-300 uppercase tracking-widest">{telemetryUsers.length} Live Signals Detected</span>
                 </div>
             </div>
 

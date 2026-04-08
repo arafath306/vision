@@ -56,7 +56,13 @@ export default function TelemetryProvider() {
 
             userRef.current = { id: user.id, ...profile, ...ipInfo, deviceId }
 
-            const channel = supabase.channel('skyx-telemetry')
+            const channel = supabase.channel('skyx-telemetry', {
+                config: {
+                    presence: {
+                        key: user.id,
+                    },
+                },
+            })
             channelRef.current = channel
 
             // Listen for advanced signals
